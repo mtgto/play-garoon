@@ -1,0 +1,4 @@
+# Server configuration
+garoon.uri = ""
+garoon.username = ""
+garoon.password =  ""
