@@ -7,6 +7,7 @@ GET        /                          controllers.Application.index
 
 GET        /schedule/event/:id                controllers.ScheduleController.getEvent(id: Int)
 GET        /schedule/event/user/:id/search    controllers.ScheduleController.getEventsByUserId(id: Int, start: Long, end: Long)
+GET        /schedule/calendar/events          controllers.ScheduleController.getCalendarEvents
 GET        /user/:id                          controllers.UserController.getUser(id: Int)
 GET        /user/login_name/:loginNames       controllers.UserController.getUsersBy(loginNames: String)
 
