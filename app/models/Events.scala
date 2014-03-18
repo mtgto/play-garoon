@@ -1,8 +1,8 @@
 package models
 
-import net.mtgto.garoon.schedule.{EventDateTime, Facility, User, Event}
+import net.mtgto.garoon.schedule._
 import play.api.libs.json.{JsValue, Json, Writes}
-import org.joda.time.DateTime
+import org.joda.time.{Interval, LocalTime, DateTime}
 
 object Events {
   implicit val eventUserWrites = new Writes[User] {
@@ -41,6 +41,36 @@ object Events {
     }
   }
 
+  implicit val localTimeWrites = new Writes[LocalTime] {
+    def writes(d: LocalTime): JsValue = {
+      Json.toJson(d.toString)
+    }
+  }
+
+  implicit val intervalWrites = new Writes[Interval] {
+    def writes(i: Interval): JsValue = {
+      Json.obj(
+        "start" -> i.getStart,
+        "end" -> i.getEnd
+      )
+    }
+  }
+
+  implicit val repeatInfoWrites = new Writes[RepeatInfo] {
+    override def writes(r: RepeatInfo): JsValue = {
+      Json.obj(
+        "start_date" -> r.startDate,
+        "end_date" -> r.endDate,
+        "start_time" -> r.startTime,
+        "end_time" -> r.endTime,
+        "type" -> r.repeatEventType.toString,
+        "day" -> r.day,
+        "week" -> r.week,
+        "exclusive" -> r.exclusiveDatetimes
+      )
+    }
+  }
+
   implicit val eventWrites = new Writes[Event] {
     def writes(e: Event): JsValue = {
       Json.obj(
@@ -51,7 +81,8 @@ object Events {
         "public_type" -> e.publicType.map(_.toString),
         "members" -> e.members,
         "facilities" -> e.facilities,
-        "when" -> e.when
+        "when" -> e.when,
+        "repeat_info" -> e.repeatInfo
       )
     }
   }
