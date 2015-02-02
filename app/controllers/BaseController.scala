@@ -14,9 +14,13 @@ trait BaseController {
 
   protected[this] implicit val context = SyncEntityIOContext
 
-  protected[this] val garoonClient: GaroonClient = new GaroonClient(
-    getConfiguration("garoon.username", "GAROON_USERNAME"),
-    getConfiguration("garoon.password", "GAROON_PASSWORD"),
-    new URI(getConfiguration("garoon.uri", "GAROON_URI"))
-  )
+  protected[this] val garoonURI: URI = new URI(getConfiguration("garoon.uri", "GAROON_URI"))
+
+  protected[this] def garoonClient: GaroonClient = {
+    try {
+      new GaroonClient(garoonURI)
+    } catch {
+      case e: Exception => e.printStackTrace(); throw e
+    }
+  }
 }
