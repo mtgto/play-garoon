@@ -6,7 +6,7 @@ import models.CalendarEvents.calendarEventWrites
 import net.mtgto.garoon.Id
 import net.mtgto.garoon.schedule.{CalendarEventService, EventId, EventRepository}
 import play.api.libs.json.Json
-import play.api.mvc.{Action, Controller}
+import play.api.mvc.Controller
 import scala.util.{Failure, Success}
 
 object ScheduleController extends Controller with BaseController {
