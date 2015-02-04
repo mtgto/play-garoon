@@ -1,7 +1,13 @@
 @(message: String)
 
 @main("Welcome to Play") {
+    <div class="row">
+        <h1>Garoon REST API</h1>
+        <p>ガルーン APIを利用しやすいようにREST APIでラップしました．</p>
+        <h2>認証</h2>
+        <p>APIを使うには「1. パスワードによる認証」「2. セッションID認証」の二種類の方法があります．</p>
+        <h3>1. パスワード認証</h3>
 
-    @play20.welcome(message)
-
+    </div>
+    @message
 }
