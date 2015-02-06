@@ -14,7 +14,7 @@ object ScheduleController extends Controller with BaseController {
     val eventRepository: EventRepository = new EventRepository(garoonClient, request.user)
     eventRepository.resolve(EventId(eventId.toString)) match {
       case Success(event) => Ok(Json.toJson(event))
-      case Failure(e) => NotFound(Json.toJson(""))
+      case Failure(e) => NotFound(Json.obj("message" -> "イベントが見つかりません"))
     }
   }
 

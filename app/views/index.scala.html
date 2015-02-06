@@ -1,13 +1,109 @@
-@(message: String)
+@()(implicit request: RequestHeader)
 
-@main("Welcome to Play") {
+@main("Garoon REST API", Seq(routes.Assets.at("stylesheets/index.css"))) {
     <div class="row">
-        <h1>Garoon REST API</h1>
-        <p>ガルーン APIを利用しやすいようにREST APIでラップしました．</p>
-        <h2>認証</h2>
-        <p>APIを使うには「1. パスワードによる認証」「2. セッションID認証」の二種類の方法があります．</p>
-        <h3>1. パスワード認証</h3>
+        <article class="col-md-9" data-spy="scroll" data-target=".menu-sidebar">
+            <h1>Garoon REST API</h1>
+            <p>ガルーン APIを利用しやすいようにREST APIでラップしました．</p>
+            <h2 id="auth">認証</h2>
+            <p>すべてのAPIを使うには「セッションID認証(こっちの方がオススメ)」「パスワードによる認証」の二種類の方法があります．</p>
+            <h3>セッションID認証</h3>
+            <p>ガルーンと共通のログインセッションが利用できます．
+                APIアクセス時に<code>CBSESSID=***セッションID***</code>をクッキーに含めてアクセスして下さい．</p>
+            <pre>$ curl -v --cookie "CBSESSID=***セッションID***" @(routes.UserController.getCurrentUser().absoluteURL())
+    < HTTP/1.1 200 OK
+    < Content-Type: application/json; charset=utf-8
+    < Content-Length: 57
+    <
+    * Connection #0 to host localhost left intact
+    {"id":"123456","name":"山田　太郎","login_name":"taro_yamada"}</pre>
+            <h3>パスワード認証</h3>
+            <p>Basic認証が利用できます．</p>
+            <pre>$ curl -v -u "***ガルーンのユーザー名***" @(routes.UserController.getCurrentUser().absoluteURL())
+    < HTTP/1.1 200 OK
+    < Content-Type: application/json; charset=utf-8
+    < Content-Length: 57
+    <
+    * Connection #0 to host localhost left intact
+    {"id":"123456","name":"山田　太郎","login_name":"taro_yamada"}</pre>
+            <p>できればパスワードを送信する必要のないセッションID認証を使って下さい.</p>
 
+            <h2 id="token">リクエストトークン</h2>
+            <h3>リクエストトークンを取得</h3>
+            <p>データの変更を伴うAPIの実行にはリクエストトークン付きでアクセスする必要があり，このAPIではそのリクエストトークンを取得できます．</p>
+            <pre>@(routes.LoginController.getRequestToken().method) @(routes.LoginController.getRequestToken().url)</pre>
+            <h4>レスポンス</h4>
+            <pre>{"request_token":"ce37437bd0afdf25d7cbbd629db82f10"}</pre>
+
+            <h2 id="user">ユーザーAPI</h2>
+            <h3>ログインユーザーの情報を取得</h3>
+            <pre>@(routes.UserController.getCurrentUser().method) @(routes.UserController.getCurrentUser().url)</pre>
+            <h4>レスポンス</h4>
+            <pre>{"id":"123456","name":"山田　太郎","login_name":"taro_yamada"}</pre>
+
+            <h3>IDを指定してユーザーの情報を取得</h3>
+            知りたいユーザーIDが123456とします．
+            <pre>@(routes.UserController.getUser(123456).method) @(routes.UserController.getUser(123456).url)</pre>
+            <h4>レスポンス</h4>
+            <pre>{"id":"123456","name":"山田　太郎","login_name":"taro_yamada"}</pre>
+
+            <h3>ログイン名を指定してユーザーの情報を取得</h3>
+            複数のログイン名を使うときにはカンマでつないだ文字列(例: <code>taro_yamada,hanako_tanaka</code>)を渡して下さい．
+            <pre>@(routes.UserController.getUsersBy("taro_yamada,hanako_tanaka").method) @(routes.UserController.getUsersBy("taro_yamada,hanako_tanaka").url)</pre>
+            <h4>レスポンス</h4>
+            <pre>[{"id":"123456","name":"山田　太郎","login_name":"taro_yamada"},{"id":"654321","name":"田中　花子","login_name":"hanako_tanaka"}]</pre>
+
+            <h2 id="schedule">スケジュールAPI</h2>
+            <h3>IDを指定してイベントを取得</h3>
+            <p>イベントIDをURL末尾の<code>:event_id</code>につけて取得できます．</p>
+            <pre>@(routes.ScheduleController.getEvent(123456).method) @(routes.ScheduleController.getEvent(123456).url.replace("123456", ":event_id"))</pre>
+            <h4>レスポンス</h4>
+            <pre>{"id":"123456","plan":null,"title":"サンプルのイベント","event_type":"normal","public_type":"public","members":[{"id":"123456","name":"山田　太郎","login_name":"taro_yamada"}],"facilities":[{"id":"100","name":"サンプル会議室","order":"16"}],"when":{"start":1423278000,"end":1423296000,"facility_code":null},"repeat_info":null}</pre>
+
+            <h3>指定ユーザーの範囲時間内のイベントを検索</h3>
+            <p><code>:start</code>から<code>:end</code>(UNIX TIME)までの指定ユーザーのイベントを取得します．</p>
+            <pre>@(routes.ScheduleController.getEventsByUserId(0, 0, 0).method) @(routes.ScheduleController.getEventsByUserId(111111, 222222, 333333).url.replace("111111", ":user_id").replace("222222", ":start").replace("333333", ":end"))</pre>
+            <h4>レスポンス</h4>
+            <pre>[{"id":"123456","plan":null,"title":"サンプルのイベント","event_type":"normal","public_type":"public","members":[{"id":"123456","name":"山田　太郎","login_name":"taro_yamada"}],"facilities":[{"id":"100","name":"サンプル会議室","order":"16"}],"when":{"start":1423278000,"end":1423296000,"facility_code":null},"repeat_info":null}]</pre>
+
+            <h3>カレンダーを取得</h3>
+            <pre>@(routes.ScheduleController.getCalendarEvents().method) @(routes.ScheduleController.getCalendarEvents().url)</pre>
+
+            <h2 id="notification">通知API</h2>
+            <h3>指定時間以降の確認済みにしてない通知を取得</h3>
+            <p><code>:start</code>からの指定ユーザーのまだ確認済みにしていない通知を取得します．</p>
+            <pre>@(routes.NotificationController.getNotifications(111111).method) @(routes.NotificationController.getNotifications(111111).url.replace("111111", ":start"))</pre>
+            <h4>レスポンス</h4>
+            <pre>[{"item":"123456","module":"grn.schedule","status":"create","is_checked":true,"read_date":1423186227000,"receive_date":1423186227000,"subject":"サンプルのイベント","subject_url":"http://garoon.example.com/cbgrn/grn.cgi/schedule/view?uid=123456&event=123456","subject_icon":null,"content":"サンプルの概要","content_url":"http://garoon.example.com/cbgrn/grn.cgi/schedule/view?uid=123456&event=123456","content_icon":null,"sender_name":"山田　太郎","sender_id":"123456","sender_url":"http://garoon.example.com/cbgrn/grn.cgi/grn/user_view?uid=123456","is_attached":false,"version":"977954"}]]</pre>
+
+
+            <h3>通知を確認済みにする</h3>
+            <pre>@(routes.NotificationController.checkNotifications(":request_token").method) @(routes.NotificationController.checkNotifications("111111").url.replace("111111", ":request_token"))</pre>
+            <h4>パラメータ</h4>
+            <p>通知取得APIから得たmodule_idとitemのリストを渡す必要があります.</p>
+            <table class="table table-bordered">
+                <thead>
+                    <tr><th>名前</th><th>値</th>
+                </thead>
+                <tbody>
+                    <tr><td>module_id</td><td>通知の種類. <code>grn.schedule</code>など.</td></tr>
+                    <tr><td>item</td><td>通知アイテムのID</td></tr>
+                </tbody>
+            </table>
+            <h4>例</h4>
+            <pre>[{"module_id":"grn.schedule","item":"123456"}]</pre>
+            <h4>レスポンス</h4>
+            <pre>[{"item":"123456","module":"grn.schedule","status":"create","is_checked":true,"read_date":1423186227000,"receive_date":1423186227000,"subject":"サンプルのイベント","subject_url":"http://garoon.example.com/cbgrn/grn.cgi/schedule/view?uid=123456&event=123456","subject_icon":null,"content":"サンプルの概要","content_url":"http://garoon.example.com/cbgrn/grn.cgi/schedule/view?uid=123456&event=123456","content_icon":null,"sender_name":"山田　太郎","sender_id":"123456","sender_url":"http://garoon.example.com/cbgrn/grn.cgi/grn/user_view?uid=123456","is_attached":false,"version":"977954"}]]</pre>
+
+        </article>
+        <nav class="col-md-3 menu-sidebar">
+            <ul class="nav" data-spy="affix" data-offset-top="60">
+                <li><a href="#auth">認証</a></li>
+                <li><a href="#token">リクエストトークン</a></li>
+                <li><a href="#user">ユーザーAPI</a></li>
+                <li><a href="#schedule">スケジュールAPI</a></li>
+                <li><a href="#notification">通知API</a></li>
+            </ul>
+        </nav>
     </div>
-    @message
 }

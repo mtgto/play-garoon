@@ -3,14 +3,18 @@
 # ~~~~
 
 # Home page
-GET        /                                      controllers.Application.index
+GET         /                                          controllers.Application.index
 
-GET        /schedule/event/:id                    controllers.ScheduleController.getEvent(id: Int)
-GET        /schedule/event/user/:id/search        controllers.ScheduleController.getEventsByUserId(id: Int, start: Long, end: Long)
-GET        /schedule/calendar/events              controllers.ScheduleController.getCalendarEvents
-GET        /user/:id                              controllers.UserController.getUser(id: Int)
-GET        /user/login_name/:loginNames           controllers.UserController.getUsersBy(loginNames: String)
-GET        /notification                          controllers.NotificationController.getNotifications(start: Long)
+POST        /api/login                                 controllers.LoginController.login
+GET         /api/request_token                         controllers.LoginController.getRequestToken
+GET         /api/schedule/event/:id                    controllers.ScheduleController.getEvent(id: Int)
+GET         /api/schedule/event/user/:id/search        controllers.ScheduleController.getEventsByUserId(id: Int, start: Long, end: Long)
+GET         /api/schedule/calendar/events              controllers.ScheduleController.getCalendarEvents
+GET         /api/user                                  controllers.UserController.getCurrentUser
+GET         /api/user/:id                              controllers.UserController.getUser(id: Int)
+GET         /api/user/login_name/:loginNames           controllers.UserController.getUsersBy(loginNames: String)
+GET         /api/notification                          controllers.NotificationController.getNotifications(start: Long)
+POST        /api/notification/check                    controllers.NotificationController.checkNotifications(request_token: String)
 
 # Map static resources from the /public folder to the /assets URL path
-GET        /assets/*file                          controllers.Assets.at(path="/public", file)
+GET         /assets/*file                              controllers.Assets.at(path="/public", file)
