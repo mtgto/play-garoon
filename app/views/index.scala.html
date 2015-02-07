@@ -6,9 +6,9 @@
             <h1>Garoon REST API</h1>
             <p>ガルーン APIを利用しやすいようにREST APIでラップしました．</p>
             <h2 id="auth">認証</h2>
-            <p>すべてのAPIを使うには「セッションID認証(こっちの方がオススメ)」「パスワードによる認証」の二種類の方法があります．</p>
+            <p>すべてのAPIを使うには「セッションID認証」「パスワードによる認証」の二種類の方法があります．</p>
             <h3>セッションID認証</h3>
-            <p>ガルーンと共通のログインセッションが利用できます．
+            <p>ログインセッションが利用できます．ログインセッションは取得APIで取得できます。
                 APIアクセス時に<code>CBSESSID=***セッションID***</code>をクッキーに含めてアクセスして下さい．</p>
             <pre>$ curl -v --cookie "CBSESSID=***セッションID***" @(routes.UserController.getCurrentUser().absoluteURL())
     < HTTP/1.1 200 OK
@@ -26,7 +26,25 @@
     <
     * Connection #0 to host localhost left intact
     {"id":"123456","name":"山田　太郎","login_name":"taro_yamada"}</pre>
-            <p>できればパスワードを送信する必要のないセッションID認証を使って下さい.</p>
+
+            <h2 id="login">ログインセッション</h2>
+            <h3>ログインセッションを取得</h3>
+            <pre>@(routes.LoginController.login().method) @(routes.LoginController.login().url)</pre>
+            <h4>パラメータ</h4>
+            <p>ガルーンのユーザー名とパスワードを渡す必要があります.</p>
+            <table class="table table-bordered">
+                <thead>
+                    <tr><th>名前</th><th>値</th>
+                </thead>
+                <tbody>
+                    <tr><td>username</td><td>ガルーンのユーザー名</td></tr>
+                    <tr><td>password</td><td>ガルーンのパスワード</td></tr>
+                </tbody>
+            </table>
+            <h4>例</h4>
+            <pre>{"username":"taro_yamada","password":"123456"}</pre>
+            <h4>レスポンス</h4>
+            <pre>{"cookie":"bn0p7o7v6b14vr973a3e9m89a2mv7c25"}</pre>
 
             <h2 id="token">リクエストトークン</h2>
             <h3>リクエストトークンを取得</h3>
@@ -99,6 +117,7 @@
         <nav class="col-md-3 menu-sidebar">
             <ul class="nav" data-spy="affix" data-offset-top="60">
                 <li><a href="#auth">認証</a></li>
+                <li><a href="#login">ログインセッション</a></li>
                 <li><a href="#token">リクエストトークン</a></li>
                 <li><a href="#user">ユーザーAPI</a></li>
                 <li><a href="#schedule">スケジュールAPI</a></li>
