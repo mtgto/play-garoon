@@ -9,7 +9,9 @@ object Users {
       Json.obj(
         "id" -> u.identity.value,
         "name" -> u.name,
-        "login_name" -> u.loginName
+        "login_name" -> u.loginName,
+        "organizations" -> u.organizationIds.map(_.value),
+        "primary_organization" -> u.primaryOrganizationId.map(_.value)
       )
     }
   }

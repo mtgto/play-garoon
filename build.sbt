@@ -4,10 +4,10 @@ version := "1.0-SNAPSHOT"
 
 resolvers += "github mtgto/garoon" at "http://mtgto.github.io/garoon/maven/"
 
-scalaVersion := "2.10.4"
+scalaVersion := "2.10.5"
 
 libraryDependencies ++= Seq(
-  "net.mtgto" %% "garoon" % "0.2.0-SNAPSHOT",
+  "net.mtgto" %% "garoon" % "0.3.0-SNAPSHOT",
   "org.webjars" % "jquery" % "2.1.3",
   "org.webjars" % "bootswatch-united" % "3.3.1+2"
 )
