@@ -13,6 +13,7 @@ GET         /api/schedule/calendar/events              controllers.ScheduleContr
 GET         /api/user                                  controllers.UserController.getCurrentUser
 GET         /api/user/:id                              controllers.UserController.getUser(id: Int)
 GET         /api/user/login_name/:loginNames           controllers.UserController.getUsersBy(loginNames: String)
+GET         /api/organization/:id                      controllers.OrganizationController.getOrganization(id: Int)
 GET         /api/notification                          controllers.NotificationController.getNotifications(start: Long)
 POST        /api/notification/check                    controllers.NotificationController.checkNotifications(request_token: String)
 
